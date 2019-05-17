@@ -27,7 +27,7 @@ jobs:
       # Add deployment key fingerprint for CircleCI to use for a push
       - add_ssh_keys:
           fingerprints:
-            - "1d:76:3a:97:e8:e9:b1:a2:29:ba:46:e3:dd:84:d3:7f"
+            - "5d:54:5f:c6:d4:4e:a5:2d:0e:bf:a6:b2:bc:5b:6a:fd"
 
       # Grab the the built markdown from the last step
       - run:
