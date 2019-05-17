@@ -2,5 +2,7 @@ name: package-management
 channels:
   - conda-forge
 dependencies:
+  - pip
+  - jupyterlab
   - pip:
     - bash_kernel
