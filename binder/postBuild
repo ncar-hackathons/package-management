@@ -1,6 +1,0 @@
-#!/bin/bash
-set -ex
-
-# install Bash Kernel
-echo "Installing Bash Kernel"
-python -m bash_kernel.install
