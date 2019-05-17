@@ -1,0 +1,6 @@
+name: package-management
+channels:
+  - conda-forge
+dependencies:
+  - pip:
+    - bash_kernel

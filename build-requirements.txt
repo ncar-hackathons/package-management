@@ -1,0 +1,6 @@
+tqdm
+numpy
+pyyaml
+nbformat
+nbclean
+jupyter-book

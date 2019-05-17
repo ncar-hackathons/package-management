@@ -1,0 +1,13 @@
+name: ncar-hacks-dev
+channels:
+  - conda-forge
+dependencies:
+  - git
+  - make
+  - pandoc==1.19
+  - pip
+  - python=3.7
+  - jupyterlab
+  - jupyter_contrib_nbextensions
+  - pip:
+    - jupyter-book
