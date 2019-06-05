@@ -9,3 +9,10 @@ though it is quite popular in the python community.
 ## What is Miniconda?
 Unlike Anaconda, Miniconda doesn't come with any installed packages by default.
 Note that for miniconda, everytime you open up a terminal, `conda` won't automatically be available. Run the command below to use conda within miniconda.
+
+## Install bash kernel
+pip install bash_kernel
+python -m bash_kernel.install
+
+## Run jupyter notebook
+jupyter notebook
