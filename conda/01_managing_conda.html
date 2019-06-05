@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1">
 
   <title>Managing Conda</title>
-  <meta name="description" content="Managing Conda">
+  <meta name="description" content="Package Management with Conda and Pip">
 
   <link rel="canonical" href="https://ncar-hackathons.github.io/package-management/conda/01_managing_conda.html">
   <link rel="alternate" type="application/rss+xml" title="Package Management and Packaging" href="https://ncar-hackathons.github.io/package-management/feed.xml">
@@ -26,7 +26,7 @@
   <meta property="og:url"         content="https://ncar-hackathons.github.io/package-management/conda/01_managing_conda.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Managing Conda" />
-<meta property="og:description" content="Managing Conda" />
+<meta property="og:description" content="Package Management with Conda and Pip" />
 <meta property="og:image"       content="" />
 
 
@@ -39,11 +39,11 @@
   "headline":
     "Managing Conda",
   "datePublished":
-    "2019-05-28T16:53:10+00:00",
+    "2019-06-05T19:26:49+00:00",
   "dateModified":
-    "2019-05-28T16:53:10+00:00",
+    "2019-06-05T19:26:49+00:00",
   "description":
-    "Managing Conda",
+    "Package Management with Conda and Pip",
   "author": {
     "@type": "Person",
     "name": "The XDev Team"
@@ -852,18 +852,386 @@ initFunction(initQuery);
 
 
             <div class="c-textbook__content">
-              <h1 id="managing-conda">Managing Conda</h1>
+              <h1 id="package-management-with-conda-and-pip">Package Management with Conda and Pip</h1>
+
+<h1 id="anaconda-vs-miniconda-vs-conda">Anaconda vs Miniconda vs “conda”</h1>
+<p>Anaconda is a free and open-source distribution of the Python programming language for scientific computing. Anaconda includes a wide selection of Python packages that are installed by default, with the ability to install more packages using the “conda” package manager program.</p>
+
+<p>Miniconda is a lightweight implementation of the Anaconda distribution that provides the “conda” package manager, but does not include the large collection of scientific Python packages installed by default like Anaconda does.</p>
+
+<p>“conda” is simply the package and environment manager program that allows new software to be installed. The “conda” program is available whether you choose to install Anaconda or Miniconda.</p>
+
+<h1 id="pip">pip</h1>
+
+<p>Pip is a more basic package manager than conda that allows you to install software from PyPI (Python Package Index) as well as from GitHub. It works particularly well for pure Python packages, but things can get complicated when compiled code and external (non-Python) dependencies are involved.</p>
+
+<p>Not all packages are available on conda, so pip is still useful even if you’re primarily using conda. All conda environments that have Python installed should also include pip by default.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install -e 'git+https://github.com/NCAR/esmlab.git#egg=esmlab'
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">-e</code> installs in “editable” mode</p>
+
+<p><code class="highlighter-rouge">git+</code> at the beginning of a URL installs from a git repository</p>
+
+<h1 id="installing-and-testing-conda">Installing and testing conda</h1>
+
+<p>Download and run the conda installer script</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+sh ./Miniconda3-latest-MacOSX-x86_64.sh
+</code></pre></div></div>
+<p>OR</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+sh ./Miniconda3-latest-Linux-x86_64.sh
+</code></pre></div></div>
+
+<p>Then open a new terminal and check to ensure the <code class="highlighter-rouge">conda</code> program exists:</p>
 
 <div class="cell code_cell">
   <div class="input_area">
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda <span class="nt">--version</span> 
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda <span class="nt">--version</span>
+which conda
 </code></pre></div>    </div>
   </div>
 
   <div class="output_wrapper">
     <div class="output_subarea">
-      <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda 4.6.13
+      <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda 4.6.14
+/Users/hallock/miniconda3/bin/conda
 </code></pre></div>      </div>
+    </div>
+  </div>
+</div>
+
+<h1 id="conda-gotchas">conda gotchas</h1>
+
+<p>Note that the conda installation instructions recommend running <code class="highlighter-rouge">conda init {shell}</code>, but that this will likely result in whichever Python installation was previously used by default being overridden by the new conda-provided Python. The safest way to install conda without interfering with existing Python installs would be to add the directory <code class="highlighter-rouge">/path/to/miniconda/condabin</code> to your PATH environment variable, which will provide just the <code class="highlighter-rouge">conda</code> program but not <code class="highlighter-rouge">python</code>.</p>
+
+<p>Behavior with shells other than <code class="highlighter-rouge">bash</code> (<code class="highlighter-rouge">tcsh</code> in particular) is a bit inconsistent. <code class="highlighter-rouge">conda activate</code> does not seem to work properly in <code class="highlighter-rouge">tcsh</code>, but you could manually set your PATH environment variable to include the appropriate environment’s <code class="highlighter-rouge">bin</code> directory.</p>
+
+<h1 id="conda-channels">conda “channels”</h1>
+
+<p>“Conda packages are downloaded from remote channels, which are URLs to directories containing conda packages. The conda command searches a default set of channels, and packages are automatically downloaded and updated from https://repo.anaconda.com/pkgs/. You can modify what remote channels are automatically searched. You might want to do this to maintain a private or internal channel. For details, see how to modify your channel lists.” - <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/channels.html">conda documentation</a></p>
+
+<p>Generally speaking, conda “channels” are intended to provide packages that are guaranteed to be compatible with each other. Mixing and matching packages between channels is a common source of frustration for users, so using a single source for all of your packages is generally preferred, if possible.</p>
+
+<h1 id="conda-forge">“conda-forge”</h1>
+
+<p>The <code class="highlighter-rouge">conda-forge</code> channel is a community led collection of recipes and packages. As of June 4, 2019, There are 6862 repositories (nearly all of which represent unique conda packages) and 1373 members in the conda-forge organization on GitHub.</p>
+
+<p>I usually recommend configuring conda to use <code class="highlighter-rouge">conda-forge</code> by default:</p>
+
+<div class="cell code_cell">
+  <div class="input_area">
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda config <span class="nt">--add</span> channels conda-forge
+</code></pre></div>    </div>
+  </div>
+
+  <div class="output_wrapper">
+    <div class="output_subarea">
+      <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Warning: 'conda-forge' already in 'channels' list, moving to the top
+</code></pre></div>      </div>
+    </div>
+  </div>
+</div>
+
+<h1 id="installing-packages">Installing packages</h1>
+
+<div class="cell code_cell">
+  <div class="input_area">
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda activate base
+conda install <span class="nt">-y</span> <span class="nv">python</span><span class="o">=</span>3
+conda install <span class="nt">-y</span> numpy xarray
+</code></pre></div>    </div>
+  </div>
+
+  <div class="output_wrapper">
+    <div class="output_subarea">
+      <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(base) Collecting package metadata: done
+Solving environment: done
+
+# All requested packages already installed.
+
+(base) Collecting package metadata: done
+Solving environment: done
+
+# All requested packages already installed.
+
+(base) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>      </div>
+
+      <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+# Upgrading packages
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda activate base
+conda update -y python numpy xarray
+</code></pre></div>      </div>
+    </div>
+
+    <div class="output_wrapper">
+      <div class="output_subarea">
+        <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(base) Collecting package metadata: done
+Solving environment: done
+
+# All requested packages already installed.
+
+(base) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>        </div>
+
+        <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+# Conda environments
+
+By default, conda operates in the `base` "environment". However, this means that every package installed in the `base` environment must be compatible with each other, even if they are not all used for the same projects. Installing packages into separate environments for each project/task prevents any possible collision between packages.
+
+`conda env create -f /path/to/environment.yml # .yml file contains env name and packages to be installed`
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda create -y --name env1 python=2.7 numpy &gt;/dev/null
+conda create -y --name env2 python=3 numpy xarray &gt;/dev/null
+</code></pre></div>        </div>
+      </div>
+
+      <div class="output_wrapper">
+        <div class="output_subarea">
+          <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(base) (base) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>          </div>
+
+          <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+# Conda environment demo
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda activate env1
+python -c 'from __future__ import print_function;import numpy, platform;print("python version: %s" % platform.python_version());print("numpy version: %s" % numpy.__version__);import xarray;print("xarray version: %s" % xarray.__version__)'
+conda deactivate
+</code></pre></div>          </div>
+        </div>
+
+        <div class="output_wrapper">
+          <div class="output_subarea">
+            <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(env1) python version: 2.7.15
+numpy version: 1.16.4
+Traceback (most recent call last):
+  File "&lt;string&gt;", line 1, in &lt;module&gt;
+ImportError: No module named xarray
+(env1) (base) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>            </div>
+
+            <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda activate env2
+python -c 'from __future__ import print_function;import numpy, platform;print("python version: %s" % platform.python_version());print("numpy version: %s" % numpy.__version__);import xarray;print("xarray version: %s" % xarray.__version__)'
+conda deactivate
+</code></pre></div>            </div>
+          </div>
+
+          <div class="output_wrapper">
+            <div class="output_subarea">
+              <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(env2) python version: 3.7.3
+numpy version: 1.16.4
+xarray version: 0.12.1
+(env2) (base) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>              </div>
+
+              <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+# Fixing a broken environment
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda deactivate
+conda env remove -n broken &gt;/dev/null 2&gt;&amp;1
+conda env create -f broken.yml &gt;/dev/null 2&gt;&amp;1 # this will fail because there is no broken.yml file included
+conda activate broken
+echo "broken NCL..."
+ncl -V
+</code></pre></div>              </div>
+            </div>
+
+            <div class="output_wrapper">
+              <div class="output_subarea">
+                <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(broken) broken NCL...
+(broken) dyld: Library not loaded: @rpath/libpoppler.71.dylib
+  Referenced from: /Users/hallock/miniconda3/envs/broken/lib/libgdal.20.dylib
+  Reason: image not found
+Abort trap: 6
+(broken) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper" markdown="1"&gt;
+&lt;div class="output_subarea" markdown="1"&gt;
+{:.output_traceback_line}
+</code></pre></div>                </div>
+
+                <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+echo 'running "conda update" to fix NCL'
+conda update --all -y &gt;/dev/null 2&gt;&amp;1
+echo "fixed NCL"
+ncl -V
+conda deactivate
+</code></pre></div>                </div>
+              </div>
+
+              <div class="output_wrapper">
+                <div class="output_subarea">
+                  <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>running "conda update" to fix NCL
+(broken) (broken) fixed NCL
+(broken) 6.6.2
+(broken) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+# Reproducible Science
+
+Backup a working production environment using `conda create` with the `--clone` option, update/install packages as needed, and then test the clone environment to ensure everything still works as expected. Once the clone environment has been verified, `conda env remove` the original environment and clone the new environment back to the original name, and verify that everything is still working.
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda create -y --name original_env python=3 numpy xarray &gt;/dev/null
+conda activate original_env
+python -c 'from __future__ import print_function;import numpy, platform;print("python version: %s" % platform.python_version());print("numpy version: %s" % numpy.__version__);import xarray;print("xarray version: %s" % xarray.__version__);import dask;print("dask version: %s" % dask.__version__)'
+conda deactivate
+</code></pre></div>                  </div>
+                </div>
+
+                <div class="output_wrapper">
+                  <div class="output_subarea">
+                    <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(original_env) python version: 3.7.3
+numpy version: 1.16.4
+xarray version: 0.12.1
+Traceback (most recent call last):
+  File "&lt;string&gt;", line 1, in &lt;module&gt;
+ModuleNotFoundError: No module named 'dask'
+(original_env) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+### Clone original environment to temporary environment
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda create -y --name temp_env --clone original_env &gt;/dev/null
+conda activate temp_env
+conda update -y --all # update any packages
+conda install -y dask &gt;/dev/null
+# run tests
+python -c 'from __future__ import print_function;import numpy, platform;print("python version: %s" % platform.python_version());print("numpy version: %s" % numpy.__version__);import xarray;print("xarray version: %s" % xarray.__version__);import dask;print("dask version: %s" % dask.__version__)'
+conda deactivate
+</code></pre></div>                    </div>
+                  </div>
+
+                  <div class="output_wrapper">
+                    <div class="output_subarea">
+                      <div class="output_stream highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(temp_env) Collecting package metadata: done
+Solving environment: done
+
+# All requested packages already installed.
+
+(temp_env) (temp_env) (temp_env) python version: 3.7.3
+numpy version: 1.16.4
+xarray version: 0.12.1
+dask version: 1.2.2
+(temp_env) ```
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+### Remove original environment, replace with clone of temporary environment
+
+&lt;div markdown="1" class="cell code_cell"&gt;
+&lt;div class="input_area" markdown="1"&gt;
+```bash
+conda env remove --name original_env
+conda create --name original_env --clone temp_env &gt;/dev/null
+conda activate original_env
+# run tests again
+python -c 'from __future__ import print_function;import numpy, platform;print("python version: %s" % platform.python_version());print("numpy version: %s" % numpy.__version__);import xarray;print("xarray version: %s" % xarray.__version__);import dask;print("dask version: %s" % dask.__version__)'
+conda env remove --name temp_env
+conda deactivate
+</code></pre></div>                      </div>
+                    </div>
+
+                    <div class="output_wrapper">
+                      <div class="output_subarea">
+                        <p class="output_stream">```</p>
+
+                        <p>Remove all packages in environment /Users/hallock/miniconda3/envs/original_env:</p>
+
+                        <p>(original_env) (original_env) python version: 3.7.3
+numpy version: 1.16.4
+xarray version: 0.12.1
+dask version: 1.2.2
+(original_env) 
+Remove all packages in environment /Users/hallock/miniconda3/envs/temp_env:</p>
+
+                        <p>(original_env) ```</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
